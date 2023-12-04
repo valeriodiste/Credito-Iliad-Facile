@@ -10,17 +10,20 @@ let number;
 // Main info to be shown
 let credit;
 let renewal;
-sessionStorage.removeItem('token');
+// sessionStorage.removeItem('token');
+const RECOVER_ERRORS = true;
+const USE_SESSION_STORAGE = false;
 document.addEventListener('DOMContentLoaded', function () {
 	// Check if this page has, in its url, parameters for the user id and password
 	let params = new URLSearchParams(window.location.search);
 	// If the parameters are present, try to login
-	if (params.has('userid') && params.has('password')) {
+	if (params.has('userid') && params.has('password') && params.has('check') && params.get('check') != 0) {
 		// Login with the parameters
 		let userid = params.get('userid');
 		let password = params.get('password');
 		let check = params.get('check');
-		if (check == 1) {
+		check = parseInt(check);
+		if (check >= 1) {
 			// Redirect on this page but without the parameters in the url
 			console.log("User ID: " + userid);
 			console.log("Password: " + password);
@@ -28,6 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	} else {
 		// Check if the user is already logged in
+		// NOTE: Session storage functionalities are currently inactive...
 		if (sessionStorage.getItem('token')) {
 			// Redirect to the dashboard
 			let token = sessionStorage.getItem('token');
@@ -46,6 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			document.getElementById('login-form').style.display = 'block';
 			document.getElementById('loading').style.display = 'none';
 			// Check if the user has already tried to login
+			let params = new URLSearchParams(window.location.search);
 			if (params.has('check')) {
 				// Show an alert
 				let check = params.get('check');
@@ -68,7 +73,28 @@ document.addEventListener('DOMContentLoaded', function () {
 		} else {
 			event.preventDefault();
 			// Redirect on this page but with the parameters in the url
-			window.location.href = 'index.html?userid=' + userid + '&password=' + password + '&check=1';
+			let check = 5;
+			if (params.has('check')) {
+				check = params.get('check');
+				check = parseInt(check);
+				if (check == 0) {
+					check = 5;
+				}
+			}
+			window.location.href = 'index.html?userid=' + userid + '&password=' + password + '&check=' + check;
+		}
+	});
+	// Add event listener to "show-password" button
+	document.getElementById('show-password').addEventListener('click', function (event) {
+		// Get the password input field
+		let password_input = document.getElementById('password');
+		// Check if the password is already shown
+		if (password_input.type == 'password') {
+			// Show the password
+			password_input.type = 'text';
+		} else {
+			// Hide the password
+			password_input.type = 'password';
 		}
 	});
 });
@@ -94,7 +120,7 @@ function login(userid, password) {
 					user_id = response.data.id;
 					number = response.data.number;
 					// Save the token in the local storage
-					sessionStorage.setItem('token', token);
+					if (USE_SESSION_STORAGE) sessionStorage.setItem('token', token);
 					console.log("Token received: " + token);
 					console.log("ID utente: " + user_id);
 					console.log("Utente: " + username);
@@ -112,15 +138,23 @@ function login(userid, password) {
 			} else {
 				// Received an invalid response
 				console.log(response);
-				let alert_text = "ERRORE (in 'login(...)' from 'iliad-unofficial-api'):\n" + response.status + "\n\n" + response.message;
-				alert(alert_text);
+				if (RECOVER_ERRORS) {
+					recover_error();
+				} else {
+					let alert_text = "ERRORE (in 'login(...)' from 'iliad-unofficial-api'):\n" + response.status + "\n\n" + response.message;
+					alert(alert_text);
+				}
 			}
 		})
 		.catch(error => {
 			// Received an error
 			console.log(error);
-			let alert_text = "ERRORE (in 'login(...)' from 'api.allorigins.win':\n" + error.message;
-			alert(alert_text);
+			if (RECOVER_ERRORS) {
+				recover_error();
+			} else {
+				let alert_text = "ERRORE (in 'login(...)' from 'api.allorigins.win':\n" + error.message;
+				alert(alert_text);
+			}
 		});
 
 }
@@ -147,15 +181,23 @@ function use_token(token) {
 			} else {
 				// Received an invalid response
 				console.log(response);
-				let alert_text = "ERRORE (in 'use_token(...)' from 'iliad-unofficial-api'):\n" + response.status + "\n\n" + response.message;
-				alert(alert_text);
+				if (RECOVER_ERRORS) {
+					recover_error();
+				} else {
+					let alert_text = "ERRORE (in 'use_token(...)' from 'iliad-unofficial-api'):\n" + response.status + "\n\n" + response.message;
+					alert(alert_text);
+				}
 			}
 		})
 		.catch(error => {
 			// Received an error
 			console.log(error);
-			let alert_text = "ERRORE (in 'use_token(...)' from 'api.allorigins.win':\n" + error.message;
-			alert(alert_text);
+			if (RECOVER_ERRORS) {
+				recover_error();
+			} else {
+				let alert_text = "ERRORE (in 'use_token(...)' from 'api.allorigins.win':\n" + error.message;
+				alert(alert_text);
+			}
 		});
 }
 function append_info() {
@@ -200,4 +242,17 @@ function append_info() {
 	document.getElementById('login-form').style.display = 'none';
 	document.getElementById('loading').style.display = 'none';
 	info_div.style.display = 'block';
+}
+function recover_error() {
+	// If we have userid, password and check parameters in URL, reload the page with same parameters and check parameter to [check]-1
+	let params = new URLSearchParams(window.location.search);
+	if (params.has('userid') && params.has('password') && params.has('check')) {
+		let userid = params.get('userid');
+		let password = params.get('password');
+		let check = params.get('check');
+		check = parseInt(check);
+		check -= 1;
+		window.location.href = 'index.html?userid=' + userid + '&password=' + password + '&check=' + check;
+	}
+
 }

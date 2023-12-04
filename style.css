@@ -56,8 +56,8 @@ html, body {
 	text-align: center;
 	color: var(--neutral-color);
 }
-#login-form > input[type="text"],
-#login-form > input[type="password"] {
+#login-form input[type="text"],
+#login-form input[type="password"] {
 	width: calc(100% - 10px * 2);
 	margin: 10px 0;
 	padding: 10px;
@@ -67,19 +67,42 @@ html, body {
 	background-color: var(--neutral-color-light);
 	border-radius: 5px;
 }
+#login-form .password-container {
+	width: 100%;
+	display: inline-flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+}
+#login-form .password-container input {
+	width: calc(100% - 10px * 2 - 30px);
+}
+#login-form .password-container > #show-password {
+	border: 0;
+	background: var(--primary-color);
+	color: var(--neutral-color);
+	font-weight: bold;
+	font-size: 1.15em;
+	border-radius: 5px;
+	cursor: pointer;
+	padding-top: 10px;
+	padding-bottom: 5px;
+	width: 45px;
+	margin-left: 8px;
+}
 /* Placeholder text */
-#login-form > input[type="text"]::-webkit-input-placeholder,
-#login-form > input[type="password"]::-webkit-input-placeholder,
-#login-form > input[type="text"]:-moz-placeholder,
-#login-form > input[type="text"]:-ms-input-placeholder,
-#login-form > input[type="password"]:-moz-placeholder {
+#login-form input[type="text"]::-webkit-input-placeholder,
+#login-form input[type="password"]::-webkit-input-placeholder,
+#login-form input[type="text"]:-moz-placeholder,
+#login-form input[type="text"]:-ms-input-placeholder,
+#login-form input[type="password"]:-moz-placeholder {
 	color: var(--neutral-color-dark);
 }
-#login-form > input[type="text"]:focus,
-#login-form > input[type="password"]:focus {
+#login-form input[type="text"]:focus,
+#login-form input[type="password"]:focus {
 	outline: 2px solid var(--secondary-color);
 }
-#login-form > input[type="submit"] {
+#login-form input[type="submit"] {
 	width: 100%;
 	padding: 10px;
 	margin-top: 10px;
