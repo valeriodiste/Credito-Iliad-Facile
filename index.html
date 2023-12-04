@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+	<title>Credito Iliad Facile</title>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<div id="page-content">
+		<div id="loading"></div>
+		<form id="login-form" style="display: none;">
+			<div class="error-message">
+				<div>ID UTENTE O PASSWORD ERRATI</div>
+			</div>
+			<h1>Accedi al tuo account Iliad</h1>
+			<input id="user-id" type="text" name="user-id" placeholder="ID Utente" required title="Inserisci il tuo ID Utente" oninvalid="this.setCustomValidity('Inserisci il tuo ID Utente')" oninput="this.setCustomValidity('')"/>
+			<input id="password" type="password" name="password" placeholder="Password" required title="Inserisci la tua password" oninvalid="this.setCustomValidity('Inserisci la tua password')" oninput="this.setCustomValidity('')"/>
+			<input id="login-submit" type="submit" value="Accedi" />
+		</form>
+	</div>
+	<script src="script.js" crossorigin="anonymous" type="module"></script> <!-- crossorigin="anonymous" prevents CORS errors -->
+</body>
+</html>

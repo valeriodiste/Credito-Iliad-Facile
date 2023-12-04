@@ -1,0 +1,127 @@
+:root {
+	--primary-color: #e60000;
+	--secondary-color: rgb(56, 56, 56);
+	--neutral-color: #f2f2f2;
+	--neutral-color-dark: #c2c2c2;
+	--neutral-color-light: #f9fafb;
+}
+html, body {
+	margin: 0;
+	padding: 0;
+	font-family: sans-serif, arial;
+	background-color: var(--neutral-color);
+}
+#loading {
+	/* Add a rotating circle animation to the loading div  */
+	width: 100px;
+	height: 100px;
+	border-radius: 50%;
+	border: 10px solid transparent;
+	border-top-color: var(--primary-color);
+	animation: rotate 1s infinite linear;
+	top: 100px;
+	left: calc(50% - 100px / 2);
+	position: absolute;
+}
+@keyframes rotate {
+	100% {
+		transform: rotate(360deg);
+	}
+}
+#login-form {
+	width: 300px;
+	margin: 0 auto;
+	margin-top: 40px;
+	padding: 20px;
+	border-radius: 15px;
+	background-color: var(--secondary-color);
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+#login-form.error {
+	border: 3px solid var(--primary-color);
+}
+#login-form > .error-message {
+	color: var(--primary-color);
+	font-weight: bold;
+	text-align: center;
+	margin: 10px 0;
+}
+#login-form:not(.error) > .error-message {
+	display: none;
+}
+#login-form.error > .error-message {
+	display: block;
+}
+#login-form > h1 {
+	text-align: center;
+	color: var(--neutral-color);
+}
+#login-form > input[type="text"],
+#login-form > input[type="password"] {
+	width: calc(100% - 10px * 2);
+	margin: 10px 0;
+	padding: 10px;
+	/* border: 1px solid var(--primary-color); */
+	border: 0px;
+	font-size: 1.1em;
+	background-color: var(--neutral-color-light);
+	border-radius: 5px;
+}
+/* Placeholder text */
+#login-form > input[type="text"]::-webkit-input-placeholder,
+#login-form > input[type="password"]::-webkit-input-placeholder,
+#login-form > input[type="text"]:-moz-placeholder,
+#login-form > input[type="text"]:-ms-input-placeholder,
+#login-form > input[type="password"]:-moz-placeholder {
+	color: var(--neutral-color-dark);
+}
+#login-form > input[type="text"]:focus,
+#login-form > input[type="password"]:focus {
+	outline: 2px solid var(--secondary-color);
+}
+#login-form > input[type="submit"] {
+	width: 100%;
+	padding: 10px;
+	margin-top: 10px;
+	border: 0;
+	background: var(--primary-color);
+	color: var(--neutral-color);
+	font-weight: bold;
+	font-size: 1.15em;
+	border-radius: 5px;
+	cursor: pointer;
+}
+#iliad-info {
+	width: 400px;
+	margin: 0 auto;
+	margin-top: 40px;
+	padding: 35px;
+	border-radius: 15px;
+	background-color: var(--secondary-color);
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	font-size: 1.75em;
+	color: var(--neutral-color);
+}
+#iliad-info > div {
+	text-align: center;
+	margin: 5px 0;
+}
+#iliad-info #credit {
+	text-align: center;
+	color: var(--primary-color);
+	font-weight: bold;
+	font-size: 2em;
+	margin-bottom: 25px;
+	filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.25));
+	filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.25));
+	-moz-filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.25));
+	-webkit-filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.25));
+}
+#iliad-info #renewal {
+	text-align: center;
+	color: var(--primary-color);
+	font-size: 1.5em;
+	filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.25));
+	-moz-filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.25));
+	-webkit-filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.25));
+}
