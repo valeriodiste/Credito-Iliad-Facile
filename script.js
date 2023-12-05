@@ -212,10 +212,14 @@ function append_info() {
 	div.style.display = 'none';
 	document.body.appendChild(div);
 	// Append the info to the div
-	function create_info_div(id, text) {
+	function create_info_div(id, text, textIsHTML = false) {
 		let div = document.createElement('div');
 		div.id = id;
-		div.innerText = text;
+		if (textIsHTML) {
+			div.appendChild(text);
+		} else {
+			div.innerText = text;
+		}
 		return div;
 	}
 	// Prettify date in "DD/MM/YYYY" format into "DD Month YYYY"
@@ -228,14 +232,37 @@ function append_info() {
 			'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
 		return day + ' ' + months[month - 1] + ' ' + year;
 	}
+	// Prettify price, i.e. from NN.NN€ to an element with bigger font size for the integer part and a smaller font size for the decimal part, all preceded by the euro symbol
+	function prettify_price(price) {
+		let price_no_euro = price.replace('€', '');
+		let price_split = price_no_euro.split('.');
+		let integer = price_split[0];
+		let decimal = price_split[1];
+		let div = document.createElement('div');
+		div.classList.add('price');
+		let integer_span = document.createElement('span');
+		integer_span.classList.add('integer');
+		integer_span.innerText = integer;
+		let decimal_span = document.createElement('span');
+		decimal_span.classList.add('decimal');
+		decimal_span.innerText = decimal;
+		decimal_span.style.fontSize = '0.75em';
+		div.appendChild(integer_span);
+		div.appendChild(document.createTextNode('.'));
+		div.appendChild(decimal_span);
+		div.appendChild(document.createTextNode('€'));
+		return div;
+	}
 	let info_div = document.getElementById('iliad-info');
 	// NOTE: for some reason, the "iliad-unofficial-api" does not return username, user_id and number (as instead written in the API specification)...
 	// info_div.appendChild(create_info_div('username', username));
 	// info_div.appendChild(create_info_div('user-id', user_id));
 	// info_div.appendChild(create_info_div('number', number));
 	// Show main info
-	info_div.appendChild(create_info_div('credit-name', "Credito residuo:"));
-	info_div.appendChild(create_info_div('credit', credit));
+	info_div.appendChild(create_info_div('credit-name', "Credito:"));
+	// info_div.appendChild(create_info_div('credit', prettify_price(credit), true));
+	let credit_string = "€" + credit.replace('.', ',').replace('€', '');
+	info_div.appendChild(create_info_div('credit', credit_string));
 	info_div.appendChild(create_info_div('renewal-name', "Rinnovo:"));
 	info_div.appendChild(create_info_div('renewal', prettify_date(renewal)));
 	// Hide the login form and show the info
