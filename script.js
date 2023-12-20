@@ -10,6 +10,8 @@ let number;
 // Main info to be shown
 let credit;
 let renewal;
+// Attempt to 
+const MAX_TOTAL_LOGIN_ATTEMPTS_IN_CASE_OF_ERROR = 15;
 // sessionStorage.removeItem('token');
 const RECOVER_ERRORS = true;
 const USE_SESSION_STORAGE = false;
@@ -73,15 +75,16 @@ document.addEventListener('DOMContentLoaded', function () {
 		} else {
 			event.preventDefault();
 			// Redirect on this page but with the parameters in the url
-			let check = 5;
+			let check = MAX_TOTAL_LOGIN_ATTEMPTS_IN_CASE_OF_ERROR;
 			if (params.has('check')) {
 				check = params.get('check');
 				check = parseInt(check);
 				if (check == 0) {
-					check = 5;
+					check = MAX_TOTAL_LOGIN_ATTEMPTS_IN_CASE_OF_ERROR;
 				}
 			}
-			window.location.href = 'index.html?userid=' + userid + '&password=' + password + '&check=' + check;
+			// Wait some time before trying to log back in
+			reload_page_in_case_of_error(userid, password, check);
 		}
 	});
 	// Add event listener to "show-password" button
@@ -130,10 +133,8 @@ function login(userid, password) {
 				} else {
 					// Response does not contain token (user id and password are probably wrong)
 					console.log("Token not found in response...");
-					// let alert_text = "ERRORE: Token non trovato nella risposta";
-					// alert(alert_text);
-					// Reload the page with parameter "check=0" to avoid infinite loop
-					window.location.href = 'index.html?check=0';
+					// Reload the page with parameter "check=0" to go back to the login page (since the user id or password are for sure wrong in this case)
+					reload_page_in_case_of_error(userid, password, 0);
 				}
 			} else {
 				// Received an invalid response
@@ -279,7 +280,14 @@ function recover_error() {
 		let check = params.get('check');
 		check = parseInt(check);
 		check -= 1;
-		window.location.href = 'index.html?userid=' + userid + '&password=' + password + '&check=' + check;
+		// wait 1 second before redirecting
+		reload_page_in_case_of_error(userid, password, check);
 	}
-
+}
+function reload_page_in_case_of_error(user_id, password, check_vaule) {
+	// Waits for longer and longer the more attempts are made (before reloading page in case of error): max wait time is (0.2 * MAX_TOTAL_LOGIN_ATTEMPTS_IN_CASE_OF_ERROR) = 0.2 * 15 = 3 seconds at last attempt
+	let time_to_wait = 200 * (1 + MAX_TOTAL_LOGIN_ATTEMPTS_IN_CASE_OF_ERROR - check_vaule);
+	setTimeout(function () {
+		window.location.href = 'index.html?userid=' + user_id + '&password=' + password + '&check=' + check_vaule;
+	}, time_to_wait);
 }
