@@ -59,6 +59,11 @@ document.addEventListener('DOMContentLoaded', function () {
 				if (check == 0) {
 					// Add class "error" to the login form
 					document.getElementById('login-form').classList.add('error');
+					// Fill username and password fields with the parameters
+					let userid = params.get('userid');
+					let password = params.get('password');
+					document.getElementById('user-id').value = userid;
+					document.getElementById('password').value = password;
 				}
 			}
 		}
@@ -285,8 +290,10 @@ function recover_error() {
 	}
 }
 function reload_page_in_case_of_error(user_id, password, check_vaule) {
-	// Waits for longer and longer the more attempts are made (before reloading page in case of error): max wait time is (0.2 * MAX_TOTAL_LOGIN_ATTEMPTS_IN_CASE_OF_ERROR) = 0.2 * 15 = 3 seconds at last attempt
-	let time_to_wait = 200 * (1 + MAX_TOTAL_LOGIN_ATTEMPTS_IN_CASE_OF_ERROR - check_vaule);
+	// Waits for longer and longer the more attempts are made (before reloading page in case of error)
+	let min_time_to_wait = 500;
+	let max_time_to_wait = 3000;
+	let time_to_wait = min_time_to_wait + (max_time_to_wait - min_time_to_wait) * (MAX_TOTAL_LOGIN_ATTEMPTS_IN_CASE_OF_ERROR - check_vaule) / MAX_TOTAL_LOGIN_ATTEMPTS_IN_CASE_OF_ERROR;
 	setTimeout(function () {
 		window.location.href = 'index.html?userid=' + user_id + '&password=' + password + '&check=' + check_vaule;
 	}, time_to_wait);
