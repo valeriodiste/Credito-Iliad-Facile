@@ -133,6 +133,12 @@ function login(userid, password) {
 					console.log("ID utente: " + user_id);
 					console.log("Utente: " + username);
 					console.log("Numero: " + number);
+					// Save the token in the local storage
+					let token_info = {
+						'token': token,
+						'userid': userid
+					};
+					localStorage.setItem('tokeninfo', JSON.stringify(token_info));
 					// Use the token to get the credit
 					use_token(token);
 				} else {
@@ -186,6 +192,7 @@ function use_token(token) {
 				append_info();
 			} else {
 				// Received an invalid response
+				console.log("The token associated to this user id not valid, trying to login again...");
 				console.log(response);
 				if (RECOVER_ERRORS) {
 					recover_error();
@@ -197,6 +204,7 @@ function use_token(token) {
 		})
 		.catch(error => {
 			// Received an error
+			console.log("Trying to use a token for this user id, but encountered an error...");
 			console.log(error);
 			if (RECOVER_ERRORS) {
 				recover_error();
@@ -291,10 +299,37 @@ function recover_error() {
 }
 function reload_page_in_case_of_error(user_id, password, check_vaule) {
 	// Waits for longer and longer the more attempts are made (before reloading page in case of error)
-	let min_time_to_wait = 500;
-	let max_time_to_wait = 3000;
-	let time_to_wait = min_time_to_wait + (max_time_to_wait - min_time_to_wait) * (MAX_TOTAL_LOGIN_ATTEMPTS_IN_CASE_OF_ERROR - check_vaule) / MAX_TOTAL_LOGIN_ATTEMPTS_IN_CASE_OF_ERROR;
-	setTimeout(function () {
-		window.location.href = 'index.html?userid=' + user_id + '&password=' + password + '&check=' + check_vaule;
-	}, time_to_wait);
+	if (check_vaule > 1) {
+		let min_time_to_wait = 500;
+		let max_time_to_wait = 3000;
+		let time_to_wait = min_time_to_wait + (max_time_to_wait - min_time_to_wait) * (MAX_TOTAL_LOGIN_ATTEMPTS_IN_CASE_OF_ERROR - check_vaule) / MAX_TOTAL_LOGIN_ATTEMPTS_IN_CASE_OF_ERROR;
+		setTimeout(function () {
+			window.location.href = 'index.html?userid=' + user_id + '&password=' + password + '&check=' + check_vaule;
+		}, time_to_wait);
+	} else {
+		// Do a last attempt by using the token stored in local storage, if any
+		let token_info = localStorage.getItem('token');
+		if (!token_info || token_info == 'undefined') {
+			// Remove it from the local storage and reload the page
+			console.log("No token found in the local storage, reloading page normally...");
+			sessionStorage.removeItem('token');
+			setTimeout(function () {
+				window.location.href = 'index.html?userid=' + user_id + '&password=' + password + '&check=' + check_vaule;
+			}, 500);
+		} else {
+			let token_info_json = JSON.parse(token_info);
+			let token = token_info_json.token;
+			if (user_id != token_info_json.userid) {
+				// A different user is trying to log in, reload the page normally
+				console.log("A token was found in the local storage, but not for this user trying to login, reloading page normally...");
+				setTimeout(function () {
+					window.location.href = 'index.html?userid=' + user_id + '&password=' + password + '&check=' + check_vaule;
+				}, 500);
+			} else {
+				console.log("A token for this user was found in the local storage, using it to log in...");
+				// Use the token to get the credit
+				use_token(token);
+			}
+		}
+	}
 }
